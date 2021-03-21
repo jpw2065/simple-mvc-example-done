@@ -46,7 +46,6 @@ const readAllCats = (req, res, callback) => {
   Cat.find(callback).lean();
 };
 
-
 // function to find a specific cat on request.
 // Express functions always receive the request and the response.
 const readCat = (req, res) => {
@@ -106,16 +105,14 @@ const hostPage2 = (req, res) => {
 // controller functions in Express receive the full HTTP request
 // and a pre-filled out response object to send
 const hostPage3 = (req, res) => {
-    // res.render takes a name of a page to render.
-    // These must be in the folder you specified as views in your main app.js file
-    // Additionally, you don't need .jade because you registered the file type
-    // in the app.js as jade. Calling res.render('index')
-    // actually calls index.jade. A second parameter of JSON can be passed
-    // into the jade to be used as variables with #{varName}
+  // res.render takes a name of a page to render.
+  // These must be in the folder you specified as views in your main app.js file
+  // Additionally, you don't need .jade because you registered the file type
+  // in the app.js as jade. Calling res.render('index')
+  // actually calls index.jade. A second parameter of JSON can be passed
+  // into the jade to be used as variables with #{varName}
   res.render('page3');
 };
-
-
 
 const hostPage4 = (req, res) => {
   const callback = (err, docs) => {
@@ -127,7 +124,6 @@ const hostPage4 = (req, res) => {
 
   Dog.find(callback).lean();
 };
-
 
 // function to handle get request to send the name
 // controller functions in Express receive the full HTTP request
@@ -182,7 +178,6 @@ const setName = (req, res) => {
 
   return res;
 };
-
 
 // function to handle requests search for a name and return the object
 // controller functions in Express receive the full HTTP request
@@ -264,11 +259,7 @@ const notFound = (req, res) => {
   });
 };
 
-
-
-
 const createDog = (req, res) => {
-
   if (!req.body.name || !req.body.breed || !req.body.age) {
     return res.status(400).json({ error: 'Name, breed and age are all required' });
   }
@@ -276,7 +267,7 @@ const createDog = (req, res) => {
   const dogData = {
     name: req.body.name,
     breed: req.body.breed,
-    age: req.body.age
+    age: req.body.age,
   };
 
   const newDog = new Dog(dogData);
@@ -291,30 +282,28 @@ const createDog = (req, res) => {
   savePromise.catch((err) => res.status(500).json({ err }));
 
   return res;
-
-}
+};
 
 const ageDog = (req, res) => {
-
   if (!req.body.name) {
     return res.status(400).json({ error: 'Name, breed and age are all required' });
   }
-
 
   const callback = (err, doc) => {
     if (err) {
       return res.status(500).json({ err }); // if error, return it
     }
 
-    doc.age++;
-    doc.save();
+    const dog = doc;
+    dog.age++;
+    dog.save();
 
-    return res.json(doc);
+    return res.json(dog);
   };
 
   Dog.findByName(req.body.name, callback);
-}
-
+  return res;
+};
 
 // export the relevant public controller functions
 module.exports = {

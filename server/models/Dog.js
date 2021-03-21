@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-
 let DogModel = {};
 
 const DogSchema = new mongoose.Schema({
@@ -17,7 +16,6 @@ const DogSchema = new mongoose.Schema({
     required: true,
   },
 
-
   age: {
     type: Number,
     min: 0,
@@ -31,19 +29,15 @@ const DogSchema = new mongoose.Schema({
 
 });
 
-
-
 DogSchema.statics.findByName = (name, callback) => {
   const search = {
-    name
+    name,
   };
 
   return DogModel.findOne(search, callback);
 };
 
-
 DogModel = mongoose.model('Dog', DogSchema);
-
 
 // export our public properties
 module.exports.DogModel = DogModel;
