@@ -3,6 +3,7 @@ const models = require('../models');
 
 // get the Cat model
 const Cat = models.Cat.CatModel;
+const Dog = models.Dog.DogModel;
 
 // default fake data so that we have something to work with until we make a real Cat
 const defaultData = {
@@ -113,6 +114,20 @@ const hostPage3 = (req, res) => {
     // into the jade to be used as variables with #{varName}
   res.render('page3');
 };
+
+
+
+const hostPage4 = (req, res) => {
+  const callback = (err, docs) => {
+    if (err) {
+      return res.status(500).json({ err }); // if error, return it
+    }
+    return res.render('page4', { dogs: docs });
+  };
+
+  Dog.find(callback).lean();
+};
+
 
 // function to handle get request to send the name
 // controller functions in Express receive the full HTTP request
@@ -249,15 +264,70 @@ const notFound = (req, res) => {
   });
 };
 
+
+
+
+const createDog = (req, res) => {
+
+  if (!req.body.name || !req.body.breed || !req.body.age) {
+    return res.status(400).json({ error: 'Name, breed and age are all required' });
+  }
+
+  const dogData = {
+    name: req.body.name,
+    breed: req.body.breed,
+    age: req.body.age
+  };
+
+  const newDog = new Dog(dogData);
+  const savePromise = newDog.save();
+
+  savePromise.then(() => {
+    lastAdded = newDog;
+    res.json({ name: lastAdded.name, breed: lastAdded.breed, age: lastAdded.age });
+  });
+
+  // if error, return it
+  savePromise.catch((err) => res.status(500).json({ err }));
+
+  return res;
+
+}
+
+const ageDog = (req, res) => {
+
+  if (!req.body.name) {
+    return res.status(400).json({ error: 'Name, breed and age are all required' });
+  }
+
+
+  const callback = (err, doc) => {
+    if (err) {
+      return res.status(500).json({ err }); // if error, return it
+    }
+
+    doc.age++;
+    doc.save();
+
+    return res.json(doc);
+  };
+
+  Dog.findByName(req.body.name, callback);
+}
+
+
 // export the relevant public controller functions
 module.exports = {
   index: hostIndex,
   page1: hostPage1,
   page2: hostPage2,
   page3: hostPage3,
+  page4: hostPage4,
   readCat,
   getName,
   setName,
+  createDog,
+  ageDog,
   updateLast,
   searchName,
   notFound,
